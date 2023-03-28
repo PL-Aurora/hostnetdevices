@@ -33,12 +33,20 @@ void initialize_device_list() {
                         hd->host_dev_mac_addr[i] = s->sll_addr[i];
                         printf("%02x%c", (hd->host_dev_mac_addr[i]), (i+1!=s->sll_halen)?':':'\n');
                     }
-                    // TODO:
                     add_device_to_list(&device_list, hd);
-                    // add_dev_to_list(&dev_list, nd);
                 }
             }
             //sprawdzenie czy dany interfejs posiada rowniez adres IP
+            if ( (ifa->ifa_addr) && (ifa->ifa_addr->sa_family == AF_INET) ) {
+                if (ifa->ifa_name[0] == 'e' || ifa->ifa_name[0] == 'w') {
+                    hostdevice_t *nd = check_dev_ip(&device_list, ifa->ifa_name);
+                    if(nd) {
+                        getnameinfo(ifa->ifa_addr, sizeof(struct sockaddr_in),
+                                    nd->host_dev_ip_addr, sizeof(nd->host_dev_ip_addr), 
+                                    NULL, 0, NI_NUMERICHOST);
+                    }
+                }
+            }
         }
     }
     //zwolnienie struktury interfejsow
@@ -68,4 +76,8 @@ void free_devices() {
         free(device_list);
         device_list = p;
     }
+}
+
+int cmp_ifaces(char *dev_iface, char *iface) {
+    return strcmp(dev_iface, iface);
 }

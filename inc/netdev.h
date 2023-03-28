@@ -32,12 +32,12 @@ void initialize_device_list();
 hostdevice_t *initialize_device();
 
 /* funkcje manipulujace urzadzeniem */
-
 void add_device_to_list(hostdevice_t **list, hostdevice_t *hd);
 void free_devices();
 
+void loop_devices(const hostdevice_t **list, void (*f)(hostdevice_t *hd));
+
 /*
-void add_dev_to_list(DevList *dlist, NetDev *n);
 void traverse_devices(const DevList *dl, void (*f)(NetDev *nd));
 
 NetDev *check_dev_ip(const DevList *dl, char *ifname);
