@@ -31,18 +31,21 @@ extern hostdevice_t *device_list;
 void initialize_device_list();
 hostdevice_t *initialize_device();
 
+/* funkcje manipulujace urzadzeniem */
 
+void add_device_to_list(hostdevice_t **list, hostdevice_t *hd);
+void free_devices();
 
-/* NetDev *init_dev();
-
+/*
 void add_dev_to_list(DevList *dlist, NetDev *n);
 void traverse_devices(const DevList *dl, void (*f)(NetDev *nd));
 
 NetDev *check_dev_ip(const DevList *dl, char *ifname);
 
 void print_dev_data(NetDev *nd);
-int cmp_ifaces(char *dev_iface, char *iface);
+ */
 
-void free_devices(DevList *n); */
+/* inne funkcje */
+int cmp_ifaces(char *dev_iface, char *iface);
 
 #endif //_NETDEV_H_
