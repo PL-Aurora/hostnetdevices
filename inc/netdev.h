@@ -35,17 +35,14 @@ hostdevice_t *initialize_device();
 void add_device_to_list(hostdevice_t **list, hostdevice_t *hd);
 void free_devices();
 
-void loop_devices(const hostdevice_t **list, void (*f)(hostdevice_t *hd));
+void loop_devices(hostdevice_t **list, void (*f)(hostdevice_t *hd));
 
+hostdevice_t *check_dev_ip(hostdevice_t **list, char *iname);
 /*
 void traverse_devices(const DevList *dl, void (*f)(NetDev *nd));
-
-NetDev *check_dev_ip(const DevList *dl, char *ifname);
-
-void print_dev_data(NetDev *nd);
  */
 
 /* inne funkcje */
-int cmp_ifaces(char *dev_iface, char *iface);
+void print_dev_data(hostdevice_t *nd);
 
 #endif //_NETDEV_H_

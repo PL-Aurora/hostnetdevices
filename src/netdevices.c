@@ -49,6 +49,7 @@ void initialize_device_list() {
             }
         }
     }
+    loop_devices(&device_list, print_dev_data);
     //zwolnienie struktury interfejsow
     freeifaddrs(ifaddr);
 }
@@ -78,6 +79,39 @@ void free_devices() {
     }
 }
 
-int cmp_ifaces(char *dev_iface, char *iface) {
-    return strcmp(dev_iface, iface);
+void loop_devices(hostdevice_t **list, void(*f)(hostdevice_t *hd)) {
+    hostdevice_t *wsk = *list;
+    while(wsk != NULL) {
+        (*f)(wsk);
+        wsk = wsk->next;
+    }
+}
+
+hostdevice_t *check_dev_ip(hostdevice_t **list, char *iname) {
+    hostdevice_t *wsk = *list;
+    while(wsk != NULL) {
+        if(strcmp(wsk->if_name, iname) == 0) {
+            return wsk;
+        }
+        wsk = wsk->next;
+    }
+    return NULL;
+}
+
+
+void print_dev_data(hostdevice_t *nd) {
+    char mac[20];
+
+    snprintf(mac, sizeof(mac), "%02x:%02x:%02x:%02x:%02x:%02x",
+        nd->host_dev_mac_addr[0], 
+        nd->host_dev_mac_addr[1], 
+        nd->host_dev_mac_addr[2], 
+        nd->host_dev_mac_addr[3], 
+        nd->host_dev_mac_addr[4], 
+        nd->host_dev_mac_addr[5]);
+
+    //wypisuje dane urzadzenia w postaci czytelnej dla człowieka
+
+    printf("Interface name = %-20s, MAC address = %s, IP address = %s\n", 
+        nd->if_name, mac, nd->host_dev_ip_addr);
 }
