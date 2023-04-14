@@ -31,7 +31,7 @@ void initialize_device_list() {
 
                     for (int i = 0; i < s->sll_halen; i++) {
                         hd->host_dev_mac_addr[i] = s->sll_addr[i];
-                        printf("%02x%c", (hd->host_dev_mac_addr[i]), (i+1!=s->sll_halen)?':':'\n');
+                        printf("%02x%c", (hd->host_dev_mac_addr[i]), (i + 1 != s->sll_halen) ? ':' : '\n');
                     }
                     add_device_to_list(&device_list, hd);
                 }
@@ -86,6 +86,19 @@ void loop_devices(hostdevice_t **list, void(*f)(hostdevice_t *hd)) {
         wsk = wsk->next;
     }
 }
+
+/* char *check_gateway(hostdevice_t **list) {
+    hostdevice_t *wsk = *list;
+    while(wsk != NULL) {
+        if(strcmp(wsk->if_name, iname) == 0) {
+            return wsk;
+        }
+        
+        wsk = wsk->next;
+    }
+    return NULL;
+
+} */
 
 hostdevice_t *check_dev_ip(hostdevice_t **list, char *iname) {
     hostdevice_t *wsk = *list;
