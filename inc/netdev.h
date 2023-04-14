@@ -37,7 +37,8 @@ void free_devices();
 
 void loop_devices(hostdevice_t **list, void (*f)(hostdevice_t *hd));
 
-hostdevice_t *check_dev_ip(hostdevice_t **list, char *iname);
+hostdevice_t *check_gateway(hostdevice_t **list);
+hostdevice_t *check_dev_data(hostdevice_t **list, char *iname);
 /*
 void traverse_devices(const DevList *dl, void (*f)(NetDev *nd));
  */
