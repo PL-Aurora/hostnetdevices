@@ -20,6 +20,8 @@ struct hostdevice {
     unsigned char host_dev_mac_addr[8];
     unsigned char host_dev_ip_addr[14];
 
+    unsigned char host_gtw_ip_addr[14];
+
     struct hostdevice *next;
 };
 

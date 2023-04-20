@@ -1,8 +1,14 @@
-#define PY_SSIZE_T_CLEAN
+
 #include <stdio.h>
-#include <Python.h>
+
+#include "inc/netdev.h"
+#include "inc/netgateway.h"
 
 int main(int, char**) {
-    printf("Hello world\n");
+    initialize_device_list();
+
+    getgatewayandiface();
+
+    free_devices();
     return 0;
 }

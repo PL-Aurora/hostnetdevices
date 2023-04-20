@@ -14,7 +14,7 @@
 #define BUFFER_SIZE 4096
 
 void prep_netlink_msg(struct nlmsghdr *netlmsg, char *netlmsgbuf, int msgseq);
-void parse_gateway(struct nlmsghdr *nlhdr, char *rcv_bytes);
+hostdevice_t *parse_gateway(struct nlmsghdr *nlhdr, int rcv_bytes, hostdevice_t *nd);
 int getgatewayandiface();
 
 #endif // _NETGATEWAY_H_

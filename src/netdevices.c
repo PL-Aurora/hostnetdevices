@@ -39,7 +39,7 @@ void initialize_device_list() {
             //sprawdzenie czy dany interfejs posiada rowniez adres IP
             if ( (ifa->ifa_addr) && (ifa->ifa_addr->sa_family == AF_INET) ) {
                 if (ifa->ifa_name[0] == 'e' || ifa->ifa_name[0] == 'w') {
-                    hostdevice_t *nd = check_dev_ip(&device_list, ifa->ifa_name);
+                    hostdevice_t *nd = check_dev_data(&device_list, ifa->ifa_name);
                     if(nd) {
                         getnameinfo(ifa->ifa_addr, sizeof(struct sockaddr_in),
                                     nd->host_dev_ip_addr, sizeof(nd->host_dev_ip_addr), 
@@ -100,7 +100,7 @@ void loop_devices(hostdevice_t **list, void(*f)(hostdevice_t *hd)) {
 
 } */
 
-hostdevice_t *check_dev_ip(hostdevice_t **list, char *iname) {
+hostdevice_t *check_dev_data(hostdevice_t **list, char *iname) {
     hostdevice_t *wsk = *list;
     while(wsk != NULL) {
         if(strcmp(wsk->if_name, iname) == 0) {
