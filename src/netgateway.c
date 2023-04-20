@@ -17,7 +17,7 @@ hostdevice_t *parse_gateway(struct nlmsghdr *nlhdr, int rcv_bytes, hostdevice_t 
     struct rtmsg *route_entry;
     struct rtattr *route_attribute;
 
-    [[__maybe_unused__]] char gateway_address[INET_ADDRSTRLEN]; 
+    char gateway_address[INET_ADDRSTRLEN]; 
     char interface[IF_NAMESIZE];
     
 
@@ -32,7 +32,7 @@ hostdevice_t *parse_gateway(struct nlmsghdr *nlhdr, int rcv_bytes, hostdevice_t 
 
         route_attribute = (struct rtattr *) RTM_RTA(route_entry);
         route_attribute_len = RTM_PAYLOAD(nlhdr);
-        memset(gateway_address, 0, sizeof(gateway_address));
+        
         /* Loop through all attributes */
         for ( ; RTA_OK(route_attribute, route_attribute_len);
               route_attribute = RTA_NEXT(route_attribute, route_attribute_len))
@@ -46,8 +46,10 @@ hostdevice_t *parse_gateway(struct nlmsghdr *nlhdr, int rcv_bytes, hostdevice_t 
             case RTA_GATEWAY:
                 if (nd != NULL)
                     inet_ntop(AF_INET, RTA_DATA(route_attribute), nd->host_gtw_ip_addr, sizeof(nd->host_gtw_ip_addr));
-                else 
+                else {
+                    memset(gateway_address, 0, sizeof(gateway_address));
                     inet_ntop(AF_INET, RTA_DATA(route_attribute), gateway_address, sizeof(gateway_address));
+                }
                 break;
             default:
                 break;
@@ -69,18 +71,12 @@ int getgatewayandiface()
         printf("devlist is null. no possible gateway to determine.\n");
         return EXIT_FAILURE;
     }
-        
 
-    int received_bytes = 0, msg_len = 0, route_attribute_len = 0;
+    int received_bytes = 0, msg_len = 0;
     int sock = -1;
     unsigned int msgseq = 0;
     struct nlmsghdr *nlh, *nlmsg;
-    struct rtmsg *route_entry;
-    // This struct contain route attributes (route type)
-    struct rtattr *route_attribute;
-    [[__maybe_unused__]] char gateway_address[INET_ADDRSTRLEN]; 
-    
-    char interface[IF_NAMESIZE];
+
     char msgbuf[BUFFER_SIZE], buffer[BUFFER_SIZE];
     char *ptr = buffer;
 
@@ -91,14 +87,11 @@ int getgatewayandiface()
         return EXIT_FAILURE;
     }
 
-    memset(interface, 0, sizeof(interface));
     memset(buffer, 0, sizeof(buffer));
 
-    /* point the header and the msg structure pointers into the buffer */
     nlmsg = (struct nlmsghdr *) msgbuf;
     prep_netlink_msg(nlmsg, msgbuf, msgseq);
 
-    /* send msg */
     if (send(sock, nlmsg, nlmsg->nlmsg_len, 0) < 0) {
         perror("send failed");
         return EXIT_FAILURE;
@@ -109,19 +102,17 @@ int getgatewayandiface()
     {
         received_bytes = recv(sock, ptr, sizeof(buffer) - msg_len, 0);
         if (received_bytes < 0) {
-            perror("Error in recv");
+            perror("Blad recv");
             return EXIT_FAILURE;
         }
 
         nlh = (struct nlmsghdr *) ptr;
 
-        /* Check if the header is valid */
         if((NLMSG_OK(nlmsg, received_bytes) == 0) || (nlmsg->nlmsg_type == NLMSG_ERROR)) {
-            perror("Error in received packet");
+            perror("blad w pakiecie");
             return EXIT_FAILURE;
         }
 
-        /* If we received all data break */
         if (nlh->nlmsg_type == NLMSG_DONE)
             break;
         else {
@@ -129,7 +120,6 @@ int getgatewayandiface()
             msg_len += received_bytes;
         }
 
-        /* Break if its not a multi part message */
         if ((nlmsg->nlmsg_flags & NLM_F_MULTI) == 0)
             break;
     }
@@ -137,50 +127,11 @@ int getgatewayandiface()
 
     hostdevice_t *nd = NULL;
 
+    /* odczytanie odpowiedzi i okreslenie gateway */
     nd = parse_gateway(nlh, received_bytes, nd);
-
-    /* parse response */
-    /*     for ( ; NLMSG_OK(nlh, received_bytes); nlh = NLMSG_NEXT(nlh, received_bytes))
-    {
-        // Get the route data
-        route_entry = (struct rtmsg *) NLMSG_DATA(nlh);
-
-        // We are just interested in main routing table
-        if (route_entry->rtm_table != RT_TABLE_MAIN)
-            continue;
-
-        route_attribute = (struct rtattr *) RTM_RTA(route_entry);
-        route_attribute_len = RTM_PAYLOAD(nlh);
-        memset(gateway_address, 0, sizeof(gateway_address));
-        // Loop through all attributes
-        for ( ; RTA_OK(route_attribute, route_attribute_len);
-              route_attribute = RTA_NEXT(route_attribute, route_attribute_len))
-        {
-            switch(route_attribute->rta_type) {
-            case RTA_OIF:
-                nd = check_dev_data(&device_list, if_indextoname(*(int *)RTA_DATA(route_attribute), interface));
-                if(nd && gateway_address != NULL) 
-                    memcpy(nd->host_gtw_ip_addr, gateway_address, sizeof(gateway_address));
-                break;
-            case RTA_GATEWAY:
-                if (nd != NULL)
-                    inet_ntop(AF_INET, RTA_DATA(route_attribute), nd->host_gtw_ip_addr, sizeof(nd->host_gtw_ip_addr));
-                else 
-                    inet_ntop(AF_INET, RTA_DATA(route_attribute), gateway_address, sizeof(gateway_address));
-                break;
-            default:
-                break;
-            }
-        }
-    } */
+    
     printf("Gateway %s\n", nd->host_gtw_ip_addr);
     close(sock);
 
     return 0;
 }
-
-/* int main(int argc, char **argv)
-{
-    getgatewayandiface();
-    return 0;
-} */
