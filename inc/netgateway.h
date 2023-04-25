@@ -2,7 +2,7 @@
 #define _NETGATEWAY_H_
 
 #include <sys/socket.h>
-// #include <sys/time.h>
+
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
 #include <arpa/inet.h>
