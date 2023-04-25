@@ -4,21 +4,18 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 
-/* struct NetDevice {
-    char *dev_name;
-    unsigned char net_dev_mac_addr[8];
-    unsigned char net_dev_ip_addr[14];
-    struct NetDevice *next;
+
+struct gateway {
+    
 };
-
-typedef struct NetDevice NetDev;
-typedef struct NetDevice *DevList; */
 
 struct hostdevice {
     char *if_name;
-    unsigned char host_dev_mac_addr[8];
-    unsigned char host_dev_ip_addr[14];
+    
+    uint8_t host_dev_mac_addr[6];
+    uint8_t host_dev_ip_addr[4];
 
     unsigned char host_gtw_ip_addr[14];
 
@@ -39,11 +36,9 @@ void free_devices();
 
 void loop_devices(hostdevice_t **list, void (*f)(hostdevice_t *hd));
 
-hostdevice_t *check_gateway(hostdevice_t **list);
 hostdevice_t *check_dev_data(hostdevice_t **list, char *iname);
-/*
-void traverse_devices(const DevList *dl, void (*f)(NetDev *nd));
- */
+
+void transform_ip(uint8_t *ip, uint32_t ip_decimal);
 
 /* inne funkcje */
 void print_dev_data(hostdevice_t *nd);
